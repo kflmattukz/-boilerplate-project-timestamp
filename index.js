@@ -9,6 +9,7 @@ require('dotenv').config()
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
 const { parse } = require('dotenv');
+const { json } = require('express');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -45,28 +46,24 @@ app.get("/api/:date", function (req,res) {
     "utc": null
   }
 
-  if (!dateIsValid(new Date(req.params.date)) || !dateIsValid(new Date(parseInt(req.params.date)))) {
-    return res.json( { "error": "invalid date" } )
+  let time = req.params.date
+  let date = new Date(time)
+  let regex = /^\d+$/
+  let testDate = date.toString()
+
+  if (testDate == "Invalid Date" && !regex.test(time)) {
+    return res.json({ "error": "invalid date" })
   }
 
-  if (req.params.date === '') {
-    timeStampMs.unix = new Date.now()
-    timeStampMs.utc = new Date.toUTCString()
-  }
-
-  if (dateIsValid(new Date(req.params.date))) {
-
-    const date = new Date(req.params.date)
-    timeStampMs.unix = parseInt(date.getTime())
+  if (dateIsValid(date)) {
+    timeStampMs.unix = date.getTime()
     timeStampMs.utc = date.toUTCString()
     return res.json(timeStampMs)
-
   }
 
-  const date = new Date(parseInt(req.params.date)).toUTCString()
-  timeStampMs.unix = parseInt(req.params.date)
-  timeStampMs.utc = date
-  
+  timeStampMs.unix = parseInt(time)
+  timeStampMs.utc = new Date(parseInt(time)).toUTCString()
+
   res.json(timeStampMs)
 })
 
