@@ -4,10 +4,11 @@
 // init project
 var express = require('express');
 var app = express();
-
+require('dotenv').config()
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
+const { parse } = require('dotenv');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -23,6 +24,29 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+
+function dateIsValid(date) {
+  return date instanceof Date && !isNaN(date);
+}
+
+app.get("/api/:date", function (req,res) {
+  let timeStampMs = {
+    "unix": null,
+    "utc": null
+  }
+
+  if (dateIsValid(new Date(req.params.date))) {
+    const date = new Date(req.params.date)
+    timeStampMs.unix = date.getTime()
+    timeStampMs.utc = date.toUTCString()
+    return res.json(timeStampMs)
+  }
+  const date = new Date(parseInt(req.params.date)).toUTCString()
+  timeStampMs.unix = parseInt(req.params.date)
+  timeStampMs.utc = date
+  
+  res.json(timeStampMs)
+})
 
 
 
