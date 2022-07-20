@@ -29,26 +29,42 @@ function dateIsValid(date) {
   return date instanceof Date && !isNaN(date);
 }
 
+app.get("/api" , function(req,res) {
+  let timeStampMs = {
+    "unix": new Date(Date.now()).getTime(),
+    "utc": new Date(Date.now()).toUTCString()
+  }
+
+  res.json(timeStampMs)
+})
+
 app.get("/api/:date", function (req,res) {
+
   let timeStampMs = {
     "unix": null,
     "utc": null
   }
 
+  if (req.params.date === '') {
+    timeStampMs.unix = new Date.now()
+    timeStampMs.utc = new Date.toUTCString()
+  }
+
   if (dateIsValid(new Date(req.params.date))) {
+
     const date = new Date(req.params.date)
     timeStampMs.unix = parseInt(date.getTime())
     timeStampMs.utc = date.toUTCString()
     return res.json(timeStampMs)
+
   }
+
   const date = new Date(parseInt(req.params.date)).toUTCString()
   timeStampMs.unix = parseInt(req.params.date)
   timeStampMs.utc = date
   
   res.json(timeStampMs)
 })
-
-
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
