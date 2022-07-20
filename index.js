@@ -37,7 +37,7 @@ app.get("/api/:date", function (req,res) {
 
   if (dateIsValid(new Date(req.params.date))) {
     const date = new Date(req.params.date)
-    timeStampMs.unix = date.getTime()
+    timeStampMs.unix = parseInt(date.getTime())
     timeStampMs.utc = date.toUTCString()
     return res.json(timeStampMs)
   }
