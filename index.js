@@ -45,6 +45,10 @@ app.get("/api/:date", function (req,res) {
     "utc": null
   }
 
+  if (!dateIsValid(new Date(req.params.date)) || !dateIsValid(new Date(parseInt(req.params.date)))) {
+    return res.json( { "error": "invalid date" } )
+  }
+
   if (req.params.date === '') {
     timeStampMs.unix = new Date.now()
     timeStampMs.utc = new Date.toUTCString()
